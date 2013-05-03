@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.IO;
+using System.Threading;
 using System.Collections.Generic;
 
 namespace QuickFix
@@ -25,14 +26,15 @@ namespace QuickFix
         #endregion
 
         public AbstractInitiator(IApplication app, IMessageStoreFactory storeFactory, SessionSettings settings)
-            : this(app, storeFactory, settings, null, null)
+            : this(app, storeFactory, settings, null, null, null)
         { }
 
-        public AbstractInitiator(IApplication app, IMessageStoreFactory storeFactory, SessionSettings settings, ILogFactory logFactory)
-            : this(app, storeFactory, settings, logFactory, null)
+        public AbstractInitiator(IApplication app, IMessageStoreFactory storeFactory, SessionSettings settings, ILogFactory logFactory, Stream dictionaryStream = null)
+            : this(app, storeFactory, settings, logFactory, null, dictionaryStream)
         { }
 
-        public AbstractInitiator(IApplication app, IMessageStoreFactory storeFactory, SessionSettings settings, ILogFactory logFactory, IMessageFactory messageFactory)
+        public AbstractInitiator(IApplication app, IMessageStoreFactory storeFactory, SessionSettings settings, ILogFactory logFactory, IMessageFactory messageFactory
+            , Stream dictionaryStream = null)
         {
             settings_ = settings;
 
@@ -47,7 +49,7 @@ namespace QuickFix
                 if ("initiator".Equals(dict.GetString(SessionSettings.CONNECTION_TYPE)))
                 {
                     sessionIDs_.Add(sessionID);
-                    sessions_[sessionID] = factory.Create(sessionID, dict);
+                    sessions_[sessionID] = factory.Create(sessionID, dict, dictionaryStream);
                     SetDisconnected(sessionID);
                 }
             }
@@ -110,6 +112,11 @@ namespace QuickFix
 
             foreach (Session session in enabledSessions)
                 session.Logon();
+        }
+
+        public void HardStop()
+        {
+            OnStop();
         }
 
         public bool IsLoggedOn()
