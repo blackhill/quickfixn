@@ -1,4 +1,7 @@
 ﻿
+using System;
+using System.IO;
+
 namespace QuickFix
 {
     /// <summary>
@@ -27,6 +30,22 @@ namespace QuickFix
 
         private void Init(string fileLogPath, string prefix)
         {
+            //BEGIN - Custom part
+
+            //search for special directory (ie: %appdata%)
+            if(fileLogPath.StartsWith("%"))
+            {
+                int end = fileLogPath.IndexOf("%", 1);
+                string specialFolderName = fileLogPath.Substring(1, end-1);
+
+                Environment.SpecialFolder specialFolder = (Environment.SpecialFolder)Enum.Parse(typeof(Environment.SpecialFolder), specialFolderName, true);
+                string specialPath = Environment.GetFolderPath(specialFolder);
+
+                fileLogPath = Path.Combine(specialPath, fileLogPath.Substring(end + 2));
+            }
+
+            //END - Custom part
+
             if (!System.IO.Directory.Exists(fileLogPath))
                 System.IO.Directory.CreateDirectory(fileLogPath);
 

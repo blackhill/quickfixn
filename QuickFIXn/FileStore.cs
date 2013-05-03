@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace QuickFix
@@ -56,6 +57,22 @@ namespace QuickFix
 
         public FileStore(string path, SessionID sessionID)
         {
+            //BEGIN - Custom part
+
+            //search for special directory (ie: %appdata%)
+            if (path.StartsWith("%"))
+            {
+                int end = path.IndexOf("%", 1);
+                string specialFolderName = path.Substring(1, end - 1);
+
+                Environment.SpecialFolder specialFolder = (Environment.SpecialFolder)Enum.Parse(typeof(Environment.SpecialFolder), specialFolderName, true);
+                string specialPath = Environment.GetFolderPath(specialFolder);
+
+                path = Path.Combine(specialPath, path.Substring(end + 2));
+            }
+
+            //END - Custom part
+
             if (!System.IO.Directory.Exists(path))
                 System.IO.Directory.CreateDirectory(path);
 
