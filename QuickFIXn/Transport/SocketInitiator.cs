@@ -41,12 +41,12 @@ namespace QuickFix.Transport
             : this(application, storeFactory, settings, null)
         { }
 
-        public SocketInitiator(IApplication application, IMessageStoreFactory storeFactory, SessionSettings settings, ILogFactory logFactory)
-            : base(application, storeFactory, settings, logFactory)
+        public SocketInitiator(IApplication application, IMessageStoreFactory storeFactory, SessionSettings settings, ILogFactory logFactory, Stream dictionaryStream = null)
+            : base(application, storeFactory, settings, logFactory, dictionaryStream)
         { }
 
-        public SocketInitiator(IApplication application, IMessageStoreFactory storeFactory, SessionSettings settings, ILogFactory logFactory, IMessageFactory messageFactory)
-            : base(application, storeFactory, settings, logFactory, messageFactory)
+        public SocketInitiator(IApplication application, IMessageStoreFactory storeFactory, SessionSettings settings, ILogFactory logFactory, IMessageFactory messageFactory, Stream dictionaryStream = null)
+            : base(application, storeFactory, settings, logFactory, messageFactory, dictionaryStream)
         { }
 
         public static void SocketInitiatorThreadStart(object socketInitiatorThread)
@@ -172,6 +172,9 @@ namespace QuickFix.Transport
         protected override void OnStop()
         {
             shutdownRequested_ = true;
+
+            foreach (var t in threads_.Values)
+                t.Disconnect();
         }
 
         protected override void DoConnect(SessionID sessionID, Dictionary settings)

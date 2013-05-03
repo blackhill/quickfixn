@@ -31,6 +31,11 @@ namespace QuickFix
         void Stop(bool force);
 
         /// <summary>
+        /// Stops existing session without sending a logout
+        /// </summary>
+        void HardStop();
+
+        /// <summary>
         /// Checks the logged on status of the session
         /// </summary>
         /// <returns>true if the session is logged on, false otherwise</returns>

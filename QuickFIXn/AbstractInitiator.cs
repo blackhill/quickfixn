@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.IO;
+using System.Threading;
 using System.Collections.Generic;
 
 namespace QuickFix
@@ -32,11 +33,11 @@ namespace QuickFix
         #endregion
 
         public AbstractInitiator(IApplication app, IMessageStoreFactory storeFactory, SessionSettings settings)
-            : this(app, storeFactory, settings, null, null)
+            : this(app, storeFactory, settings, null, null, null)
         { }
 
-        public AbstractInitiator(IApplication app, IMessageStoreFactory storeFactory, SessionSettings settings, ILogFactory logFactory)
-            : this(app, storeFactory, settings, logFactory, null)
+        public AbstractInitiator(IApplication app, IMessageStoreFactory storeFactory, SessionSettings settings, ILogFactory logFactory, Stream dictionaryStream = null)
+            : this(app, storeFactory, settings, logFactory, null, dictionaryStream)
         { }
 
         public AbstractInitiator(
@@ -146,6 +147,12 @@ namespace QuickFix
             connected_.Clear();
             disconnected_.Clear();
         }
+
+        public void HardStop()
+        {
+            OnStop();
+        }
+
 
         public bool IsLoggedOn
         {

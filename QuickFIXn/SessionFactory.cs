@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 
 namespace QuickFix
 {
@@ -29,7 +30,7 @@ namespace QuickFix
             messageFactory_ = messageFactory ?? new DefaultMessageFactory();
         }
 
-        public Session Create(SessionID sessionID, QuickFix.Dictionary settings)
+        public Session Create(SessionID sessionID, QuickFix.Dictionary settings, Stream dictionaryStream = null)
         {
             string connectionType = settings.GetString(SessionSettings.CONNECTION_TYPE);
             if (!"acceptor".Equals(connectionType) && !"initiator".Equals(connectionType))
@@ -59,7 +60,7 @@ namespace QuickFix
                 if (sessionID.IsFIXT)
                     ProcessFixTDataDictionaries(sessionID, settings, dd);
                 else
-                    ProcessFixDataDictionary(sessionID, settings, dd);
+                    ProcessFixDataDictionary(sessionID, settings, dd, dictionaryStream);
             }
 
             int heartBtInt = 0;
@@ -188,11 +189,42 @@ namespace QuickFix
             }
         }
 
-        protected void ProcessFixDataDictionary(SessionID sessionID, Dictionary settings, DataDictionaryProvider provider)
+        protected void ProcessFixDataDictionary(SessionID sessionID, Dictionary settings, DataDictionaryProvider provider, Stream dictionaryStream = null)
         {
-            DataDictionary.DataDictionary dataDictionary = createDataDictionary(sessionID, settings, SessionSettings.DATA_DICTIONARY, sessionID.BeginString);
+            DataDictionary.DataDictionary dataDictionary = null;
+            if (dictionaryStream != null)
+            {
+                dataDictionary = LoadDataDictionaryFromStream(settings, dictionaryStream);
+            }
+            else
+            {
+                dataDictionary = createDataDictionary(sessionID, settings, SessionSettings.DATA_DICTIONARY, sessionID.BeginString);
+            }
             provider.AddTransportDataDictionary(sessionID.BeginString, dataDictionary);
             provider.AddApplicationDataDictionary(FixValues.ApplVerID.FromBeginString(sessionID.BeginString), dataDictionary);
+        }
+
+        private DataDictionary.DataDictionary LoadDataDictionaryFromStream(Dictionary settings, Stream dictionaryStream)
+        {
+            DataDictionary.DataDictionary dd;
+            string path = settings.GetString(SessionSettings.DATA_DICTIONARY_STREAM);
+
+            if (!dictionariesByPath_.TryGetValue(path, out dd))
+            {
+                dd = new DataDictionary.DataDictionary(dictionaryStream);
+                dictionariesByPath_[path] = dd;
+            }
+
+            DataDictionary.DataDictionary ddCopy = new DataDictionary.DataDictionary(dd);
+
+            if (settings.Has(SessionSettings.VALIDATE_FIELDS_OUT_OF_ORDER))
+                ddCopy.CheckFieldsOutOfOrder = settings.GetBool(SessionSettings.VALIDATE_FIELDS_OUT_OF_ORDER);
+            if (settings.Has(SessionSettings.VALIDATE_FIELDS_HAVE_VALUES))
+                ddCopy.CheckFieldsHaveValues = settings.GetBool(SessionSettings.VALIDATE_FIELDS_HAVE_VALUES);
+            if (settings.Has(SessionSettings.VALIDATE_USER_DEFINED_FIELDS))
+                ddCopy.CheckUserDefinedFields = settings.GetBool(SessionSettings.VALIDATE_USER_DEFINED_FIELDS);
+
+            return ddCopy;
         }
 
     }
