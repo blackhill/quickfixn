@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading;
 using System.Collections.Generic;
 
@@ -147,7 +148,18 @@ namespace QuickFix
         /// <param name="settings"></param>
         protected virtual void OnInitialize(SessionSettings settings)
         { }
-
+        /// <summary>
+        /// Implemented to properly handle socket connection.
+        /// </summary>
+        /// <param name="sessionId"></param>
+        protected virtual void OnConnected(SessionID sessionId)
+        { }
+        /// <summary>
+        /// Implemented to properly handle socket disconnection.
+        /// </summary>
+        /// <param name="sessionId"></param>
+        protected virtual void OnDisconnected(SessionID sessionId)
+        { }
         #endregion
 
         #region Abstract Methods
@@ -256,5 +268,8 @@ namespace QuickFix
         {
             return new HashSet<SessionID>(sessions_.Keys);
         }
+
+        public abstract event EventHandler<SessionID> SessionConnected;
+        public abstract event EventHandler<SessionID> SessionDisconnected;
     }
 }
