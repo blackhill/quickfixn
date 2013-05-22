@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading;
 using System.Collections.Generic;
 
@@ -183,7 +184,18 @@ namespace QuickFix
         [System.Obsolete("This method's intended purpose is unclear.  Don't use it.")]
         protected virtual void OnInitialize(SessionSettings settings)
         { }
-
+        /// <summary>
+        /// Implemented to properly handle socket connection.
+        /// </summary>
+        /// <param name="sessionId"></param>
+        protected virtual void OnConnected(SessionID sessionId)
+        { }
+        /// <summary>
+        /// Implemented to properly handle socket disconnection.
+        /// </summary>
+        /// <param name="sessionId"></param>
+        protected virtual void OnDisconnected(SessionID sessionId)
+        { }
         #endregion
 
         #region Abstract Methods
@@ -314,5 +326,8 @@ namespace QuickFix
         {
             Dispose(true);
         }
+
+        public abstract event EventHandler<SessionID> SessionConnected;
+        public abstract event EventHandler<SessionID> SessionDisconnected;
     }
 }

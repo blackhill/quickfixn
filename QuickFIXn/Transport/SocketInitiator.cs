@@ -164,6 +164,28 @@ namespace QuickFix.Transport
             }
         }
 
+        /// <summary>
+        /// Implemented to properly handle socket connection.
+        /// </summary>
+        /// <param name="sessionId"></param>
+        protected override void OnConnected(SessionID sessionId)
+        {
+            if (SessionConnected != null)
+                SessionConnected(this, sessionId);
+        }
+
+        /// <summary>
+        /// Implemented to properly handle socket disconnection.
+        /// </summary>
+        /// <param name="sessionId"></param>
+        protected override void OnDisconnected(SessionID sessionId)
+        {
+            if(!shutdownRequested_ && SessionDisconnected != null)
+            {
+                SessionDisconnected(this, sessionId);
+            }
+        }
+
         protected override bool OnPoll(double timeout)
         {
             throw new NotImplementedException("FIXME - SocketInitiator.OnPoll not implemented!");
@@ -206,6 +228,9 @@ namespace QuickFix.Transport
                     session.Log.OnEvent(e.Message);
             }
         }
+
+        public override event EventHandler<SessionID> SessionConnected;
+        public override event EventHandler<SessionID> SessionDisconnected;
 
         #endregion
 
