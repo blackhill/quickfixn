@@ -261,6 +261,7 @@ namespace QuickFix
                 pending_.Remove(sessionID);
                 connected_.Add(sessionID);
                 disconnected_.Remove(sessionID);
+                OnConnected(sessionID);
             }
         }
 
@@ -271,6 +272,7 @@ namespace QuickFix
                 pending_.Remove(sessionID);
                 connected_.Remove(sessionID);
                 disconnected_.Add(sessionID);
+                OnDisconnected(sessionID);
             }
         }
 
