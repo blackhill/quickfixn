@@ -104,9 +104,20 @@ namespace QuickFix.Transport
         private static X509Certificate2 LoadCertificateInner(string name, string password)
         {
             X509Certificate2 certificate;
-
+            //try to determines if the file exists
+            bool isFile = false;
+            try
+            {
+                isFile = File.Exists(name);
+            }
+            catch (ArgumentException ex)
+            {
+                //catch ArgumentException to avoid invalid characters is path (if the path is in fact the certif's SubjectName it
+                //may contains double quote or whatelse.
+            }
+            
             // If no extension is found try to get from certificate store
-            if (!File.Exists(name))
+            if (!isFile)
             {
                 certificate = GetCertificateFromStore(name);
             }
@@ -245,7 +256,8 @@ namespace QuickFix.Transport
                 {
                     X509CertificateCollection certificates = new X509Certificate2Collection();
                     var clientCert = StreamFactory.LoadCertificate(socketSettings_.CertificatePath, socketSettings_.CertificatePassword);
-                    certificates.Add(clientCert);
+                    if (clientCert != null)
+                        certificates.Add(clientCert);
                     return certificates;
                 }
                 else
