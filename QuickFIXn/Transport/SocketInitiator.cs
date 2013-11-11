@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Authentication;
 using System.Text;
 using System.Net.Sockets;
 using QuickFix.Config;
@@ -72,6 +73,12 @@ namespace QuickFix.Transport
                 { }
                 if (t.Initiator.IsStopped)
                     t.Initiator.RemoveThread(t);
+                t.Initiator.SetDisconnected(t.SessionID);
+            }
+            catch (AuthenticationException e)
+            {
+                t.Session.Log.OnEvent("Connection failed: " + e.Message);
+                t.Initiator.RemoveThread(t);
                 t.Initiator.SetDisconnected(t.SessionID);
             }
             catch (IOException ex) // Can be exception when connecting, during ssl authentication or when reading
