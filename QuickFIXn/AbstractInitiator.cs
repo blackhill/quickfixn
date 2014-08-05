@@ -34,11 +34,11 @@ namespace QuickFix
         #endregion
 
         public AbstractInitiator(IApplication app, IMessageStoreFactory storeFactory, SessionSettings settings)
-            : this(app, storeFactory, settings, null, null, null)
+            : this(app, storeFactory, settings, null, null)
         { }
 
-        public AbstractInitiator(IApplication app, IMessageStoreFactory storeFactory, SessionSettings settings, ILogFactory logFactory, Stream dictionaryStream = null)
-            : this(app, storeFactory, settings, logFactory, null, dictionaryStream)
+        public AbstractInitiator(IApplication app, IMessageStoreFactory storeFactory, SessionSettings settings, ILogFactory logFactory)
+            : this(app, storeFactory, settings, logFactory, null)
         { }
 
         public AbstractInitiator(
@@ -312,6 +312,9 @@ namespace QuickFix
             return new HashSet<SessionID>(sessions_.Keys);
         }
 
+        public abstract event EventHandler<SessionIDEventArgs> SessionConnected;
+        public abstract event EventHandler<SessionIDEventArgs> SessionDisconnected;
+
         /// <summary>
         /// Any subclasses of AbstractInitiator should override this if they have resources to dispose
         /// that aren't already covered in its OnStop() handler.
@@ -328,8 +331,5 @@ namespace QuickFix
         {
             Dispose(true);
         }
-
-        public abstract event EventHandler<SessionIDEventArgs> SessionConnected;
-        public abstract event EventHandler<SessionIDEventArgs> SessionDisconnected;
     }
 }

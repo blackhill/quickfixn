@@ -42,12 +42,12 @@ namespace QuickFix.Transport
             : this(application, storeFactory, settings, null)
         { }
 
-        public SocketInitiator(IApplication application, IMessageStoreFactory storeFactory, SessionSettings settings, ILogFactory logFactory, Stream dictionaryStream = null)
-            : base(application, storeFactory, settings, logFactory, dictionaryStream)
+        public SocketInitiator(IApplication application, IMessageStoreFactory storeFactory, SessionSettings settings, ILogFactory logFactory)
+            : base(application, storeFactory, settings, logFactory)
         { }
 
-        public SocketInitiator(IApplication application, IMessageStoreFactory storeFactory, SessionSettings settings, ILogFactory logFactory, IMessageFactory messageFactory, Stream dictionaryStream = null)
-            : base(application, storeFactory, settings, logFactory, messageFactory, dictionaryStream)
+        public SocketInitiator(IApplication application, IMessageStoreFactory storeFactory, SessionSettings settings, ILogFactory logFactory, IMessageFactory messageFactory)
+            : base(application, storeFactory, settings, logFactory, messageFactory)
         { }
 
         public static void SocketInitiatorThreadStart(object socketInitiatorThread)
@@ -69,7 +69,7 @@ namespace QuickFix.Transport
             {
                 t.Session.Log.OnEvent("Connection failed: " + e.Message);
                 t.Initiator.RemoveThread(t);
-                t.Initiator.SetDisconnected(t.SessionID);
+                t.Initiator.SetDisconnected(t.Session.SessionID);
             }
             catch (IOException ex) // Can be exception when connecting, during ssl authentication or when reading
             {
@@ -235,10 +235,6 @@ namespace QuickFix.Transport
                     session.Log.OnEvent(e.Message);
             }
         }
-
-        public override event EventHandler<SessionIDEventArgs> SessionConnected;
-        public override event EventHandler<SessionIDEventArgs> SessionDisconnected;
-
         #endregion
 
         protected override void Dispose(bool disposing)
@@ -246,5 +242,8 @@ namespace QuickFix.Transport
             // nothing additional to do for this subclass
             base.Dispose(disposing);
         }
+
+        public override event EventHandler<SessionIDEventArgs> SessionConnected;
+        public override event EventHandler<SessionIDEventArgs> SessionDisconnected;
     }
 }
