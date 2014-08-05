@@ -47,7 +47,7 @@ namespace QuickFix
         /// <returns>the SessionIDs for the sessions managed by this initiator</returns>
         HashSet<SessionID> GetSessionIDs();
 
-        event EventHandler<SessionID> SessionConnected;
-        event EventHandler<SessionID> SessionDisconnected;
+        event EventHandler<SessionIDEventArgs> SessionConnected;
+        event EventHandler<SessionIDEventArgs> SessionDisconnected;
     }
 }

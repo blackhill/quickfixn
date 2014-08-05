@@ -271,7 +271,7 @@ namespace QuickFix
             return new HashSet<SessionID>(sessions_.Keys);
         }
 
-        public abstract event EventHandler<SessionID> SessionConnected;
-        public abstract event EventHandler<SessionID> SessionDisconnected;
+        public abstract event EventHandler<SessionIDEventArgs> SessionConnected;
+        public abstract event EventHandler<SessionIDEventArgs> SessionDisconnected;
     }
 }
