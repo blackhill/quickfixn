@@ -178,7 +178,7 @@ namespace QuickFix.Transport
         protected override void OnConnected(SessionID sessionId)
         {
             if (SessionConnected != null)
-                SessionConnected(this, sessionId);
+                SessionConnected(this, new SessionIDEventArgs(sessionId));
         }
 
         /// <summary>
@@ -189,7 +189,7 @@ namespace QuickFix.Transport
         {
             if(!shutdownRequested_ && SessionDisconnected != null)
             {
-                SessionDisconnected(this, sessionId);
+                SessionDisconnected(this,  new SessionIDEventArgs(sessionId));
             }
         }
 
@@ -236,8 +236,8 @@ namespace QuickFix.Transport
             }
         }
 
-        public override event EventHandler<SessionID> SessionConnected;
-        public override event EventHandler<SessionID> SessionDisconnected;
+        public override event EventHandler<SessionIDEventArgs> SessionConnected;
+        public override event EventHandler<SessionIDEventArgs> SessionDisconnected;
 
         #endregion
 
