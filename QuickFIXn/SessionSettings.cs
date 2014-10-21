@@ -26,6 +26,7 @@ namespace QuickFix
         public const string TIME_ZONE = "TimeZone";
         public const string START_DAY = "StartDay";
         public const string MAX_LATENCY = "MaxLatency";
+        public const string CHECK_LATENCY = "CheckLatency";
         public const string END_DAY = "EndDay";
         public const string START_TIME = "StartTime";
         public const string END_TIME = "EndTime";
