@@ -13,6 +13,7 @@ namespace QuickFix
         private SessionSettings _settings = null;
         private ILogFactory _logFactory = null;
         private IMessageFactory _msgFactory = null;
+        private Stream _dictionaryStream;
 
         private object sync_ = new object();
         private bool _disposed = false;
@@ -37,18 +38,19 @@ namespace QuickFix
             : this(app, storeFactory, settings, null, null)
         { }
 
-        public AbstractInitiator(IApplication app, IMessageStoreFactory storeFactory, SessionSettings settings, ILogFactory logFactory)
-            : this(app, storeFactory, settings, logFactory, null)
+        public AbstractInitiator(IApplication app, IMessageStoreFactory storeFactory, SessionSettings settings, ILogFactory logFactory, Stream dictionaryStream = null)
+            : this(app, storeFactory, settings, logFactory, null, dictionaryStream)
         { }
 
         public AbstractInitiator(
-            IApplication app, IMessageStoreFactory storeFactory, SessionSettings settings, ILogFactory logFactory, IMessageFactory messageFactory)
+            IApplication app, IMessageStoreFactory storeFactory, SessionSettings settings, ILogFactory logFactory, IMessageFactory messageFactory, Stream dictionaryStream = null)
         {
             _app = app;
             _storeFactory = storeFactory;
             _settings = settings;
             _logFactory = logFactory;
             _msgFactory = messageFactory;
+            _dictionaryStream = dictionaryStream;
 
             HashSet<SessionID> definedSessions = _settings.GetSessions();
             if (0 == definedSessions.Count)
@@ -66,7 +68,7 @@ namespace QuickFix
             {
                 Dictionary dict = _settings.Get(sessionID);
                 sessionIDs_.Add(sessionID);
-                sessions_[sessionID] = factory.Create(sessionID, dict);
+                sessions_[sessionID] = factory.Create(sessionID, dict, _dictionaryStream);
                 SetDisconnected(sessionID);
             }
 

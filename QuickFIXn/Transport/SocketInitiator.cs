@@ -38,16 +38,16 @@ namespace QuickFix.Transport
         
         #endregion
 
-        public SocketInitiator(IApplication application, IMessageStoreFactory storeFactory, SessionSettings settings)
-            : this(application, storeFactory, settings, null)
+        public SocketInitiator(IApplication application, IMessageStoreFactory storeFactory, SessionSettings settings, Stream dictionaryStream = null)
+            : this(application, storeFactory, settings, null, dictionaryStream)
         { }
 
-        public SocketInitiator(IApplication application, IMessageStoreFactory storeFactory, SessionSettings settings, ILogFactory logFactory)
-            : base(application, storeFactory, settings, logFactory)
+        public SocketInitiator(IApplication application, IMessageStoreFactory storeFactory, SessionSettings settings, ILogFactory logFactory, Stream dictionaryStream = null)
+            : base(application, storeFactory, settings, logFactory, null, dictionaryStream)
         { }
 
-        public SocketInitiator(IApplication application, IMessageStoreFactory storeFactory, SessionSettings settings, ILogFactory logFactory, IMessageFactory messageFactory)
-            : base(application, storeFactory, settings, logFactory, messageFactory)
+        public SocketInitiator(IApplication application, IMessageStoreFactory storeFactory, SessionSettings settings, ILogFactory logFactory, IMessageFactory messageFactory, Stream dictionaryStream = null)
+            : base(application, storeFactory, settings, logFactory, messageFactory, dictionaryStream)
         { }
 
         public static void SocketInitiatorThreadStart(object socketInitiatorThread)
